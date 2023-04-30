@@ -3,7 +3,7 @@ import React from 'react'
 import ButtonMore from './ButtonMore';
 import Or from './Or';
 
-const If = ({id, addIf, type}) => {
+const If = ({args, addIf, deleteIf, type}) => {
     const fields = ['all', 'product_name', 'price', 'logo', 'img', 'description', 'color', 'size', 'height', 'width', 'brand'];
     const conditions = [
         { label: 'contains', group: 'Text' },
@@ -33,14 +33,18 @@ const If = ({id, addIf, type}) => {
         { label: 'matches regex', group: 'Advanced' },
         { label: "doesn't matches regex", group: 'Advanced' }
     ]
-    const [field, setField] = React.useState('all')
-    const [condition, setCondition] = React.useState()
+    const [field, setField] = React.useState(args.field)
+    const [condition, setCondition] = React.useState(args.condition)
+    const [values, setValues] = React.useState([''])
     const [ors, setOrs] = React.useState([])
     const addOr = () => {
         const u = [...ors]
         const u_id = Date.now()
-        u.push({id: u_id.toString()})
+        u.push({id: u_id.toString(), field: 'all', condition: { label: 'contains', group: 'Text' }, values: ['']})
         setOrs(u)
+    }
+    const copy = (e) => {
+        addIf(e, {field: field, condition: condition, values: values})
     }
     return (
         <>
@@ -52,7 +56,7 @@ const If = ({id, addIf, type}) => {
                     id="combo-box-demo"
                     options={fields}
                     sx={{ width: 300 }}
-                    defaultValue={'all'}
+                    defaultValue={args.field}
                     onChange={(_, value) => setField(value)}
                     renderInput={(params) => <TextField {...params} label="Field" />}
                 />
@@ -60,18 +64,20 @@ const If = ({id, addIf, type}) => {
                     <Autocomplete
                         id="grouped-demo"
                         options={conditions}
+                        defaultValue={args.condition}
                         groupBy={(condition) => condition.group}
                         getOptionLabel={(condition) => condition.label}
+                        isOptionEqualToValue={(condition, value)=> condition.label === value.label}
                         onChange={(_, value) => setCondition(value)}
                         sx={{ width: 300 }}
                         renderInput={(params) => <TextField {...params} label="Condition" />}
                     />
-                    {(condition?.label !== 'is empty' && condition?.label !== "isn't empty" && condition) && <TextField multiline={condition.group === 'Multiple'} rows={5} placeholder={condition.group === 'Multiple' ? 'Enter one value per line' : 'Value'}></TextField>}
+                    {(condition?.label !== 'is empty' && condition?.label !== "isn't empty" && condition) && <TextField multiline={condition.group === 'Multiple'} rows={5} defaultValue={args.values} onChange={(e) => setValues(e.target.value)} placeholder={condition.group === 'Multiple' ? 'Enter one value per line' : 'Value'}></TextField>}
                 </>}
             </div>
-            <ButtonMore andFunction={addIf} orFunction={addOr} first={id==='1'}/>
+            <ButtonMore andFunction={addIf} deleteFunction={() => deleteIf(args.id)} copyFunction={copy} orFunction={addOr} first={args.id==='1'}/>
         </div>
-        {ors.map(obj => {return (<Or key={obj.id} id={obj.id}/>)})}
+        {ors.map(obj => {return (<Or key={obj.id} args={obj}/>)})}
 </>
     )
 }

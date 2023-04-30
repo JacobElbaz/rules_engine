@@ -1,9 +1,9 @@
 import React from 'react'
 import If from './If'
 
-const Or = () => {
+const Or = ({args}) => {
   return (
-    <If type={'Or'}/>
+    <If args={args} type={'Or'}/>
   )
 }
 
