@@ -2,7 +2,9 @@ import { Autocomplete, TextField } from '@mui/material'
 import React from 'react'
 import ButtonMore from './ButtonMore';
 
-const Then = () => {
+const Then = ({args, addThen, deleteThen, type}) => {
+    
+    // Constants
     const fields = ['all', 'product_name', 'price', 'logo', 'img', 'description', 'color', 'size', 'height', 'width', 'brand'];
     const actions = [
         { name: 'set to value', group: 'Text' },
@@ -34,16 +36,34 @@ const Then = () => {
         { name: 'duplicate items', group: 'Item' },
         { name: 'calculate item group', group: 'Item' }
     ];
+    const _all_Actions = [{name: 'do nothing', group: 'all'}, {name: 'exclude', group: 'all'}];
+
+    // useStates
     const [ors, setOrs] = React.useState([])
+    const [field, setField] = React.useState(args.field)
+    const [action, setAction] = React.useState(args.action)
+    const [values, setValues] = React.useState([''])
+
+    // Functions
+
+    const copy = (id) => {
+        addThen(undefined, {field: field, action: action, values: values}, id)
+    }
+    const addOr = () => {
+
+    }
+
     return (
         <div className='block'>
             <div className='inputs'>
-                <strong style={{ color: '#2196f3' }}>Then</strong>
+                <strong style={{ color: '#2196f3' }}>{type}</strong>
                 take
                 <Autocomplete
                     disablePortal
                     id="combo-box-demo"
                     options={fields}
+                    defaultValue={args.field}
+                    onChange={(_, value) => setField(value)}
                     sx={{ width: 300 }}
                     renderInput={(params) => <TextField {...params} label="Field" />}
                 />
@@ -53,11 +73,14 @@ const Then = () => {
                     options={actions}
                     groupBy={(action) => action.group}
                     getOptionLabel={(action) => action.name}
+                    defaultValue={args.action}
+                    onChange={(_, value) => setAction(value)}
+                    isOptionEqualToValue={(action, value)=> action.name === value.name}
                     sx={{ width: 300 }}
                     renderInput={(params) => <TextField {...params} label="Action" />}
                 />
             </div>
-            <ButtonMore />
+            <ButtonMore andFunction={(e) => addThen(e,undefined,args.id)} deleteFunction={() => deleteThen(args.id)} copyFunction={() => copy(args.id)} orFunction={addOr} first={args.id==='1'}/>
         </div>
     )
 }

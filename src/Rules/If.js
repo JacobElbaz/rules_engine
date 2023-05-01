@@ -4,6 +4,8 @@ import ButtonMore from './ButtonMore';
 import Or from './Or';
 
 const If = ({args, addIf, deleteIf, type}) => {
+    
+    // Constants
     const fields = ['all', 'product_name', 'price', 'logo', 'img', 'description', 'color', 'size', 'height', 'width', 'brand'];
     const conditions = [
         { label: 'contains', group: 'Text' },
@@ -33,24 +35,29 @@ const If = ({args, addIf, deleteIf, type}) => {
         { label: 'matches regex', group: 'Advanced' },
         { label: "doesn't matches regex", group: 'Advanced' }
     ]
+
+    // useStates
     const [field, setField] = React.useState(args.field)
     const [condition, setCondition] = React.useState(args.condition)
     const [values, setValues] = React.useState([''])
     const [ors, setOrs] = React.useState([])
+    
+    // Functions
     const addOr = () => {
         const u = [...ors]
         const u_id = Date.now()
         u.push({id: u_id.toString(), field: 'all', condition: { label: 'contains', group: 'Text' }, values: ['']})
         setOrs(u)
     }
-    const copy = (e) => {
-        addIf(e, {field: field, condition: condition, values: values})
+    const copy = (id) => {
+        addIf(undefined, {field: field, condition: condition, values: values}, id)
     }
+    
     return (
         <>
         <div className={type === 'Or' ? 'or-block' : 'block'}>
             <div className='inputs'>
-                <strong style={{ color: '#2196f3' }}>{type}</strong>
+                <strong style={{ color: '#2196f3', width: '35px' }}>{type}</strong>
                 <Autocomplete
                     disablePortal
                     id="combo-box-demo"
@@ -75,7 +82,7 @@ const If = ({args, addIf, deleteIf, type}) => {
                     {(condition?.label !== 'is empty' && condition?.label !== "isn't empty" && condition) && <TextField multiline={condition.group === 'Multiple'} rows={5} defaultValue={args.values} onChange={(e) => setValues(e.target.value)} placeholder={condition.group === 'Multiple' ? 'Enter one value per line' : 'Value'}></TextField>}
                 </>}
             </div>
-            <ButtonMore andFunction={addIf} deleteFunction={() => deleteIf(args.id)} copyFunction={copy} orFunction={addOr} first={args.id==='1'}/>
+            <ButtonMore andFunction={(e) => addIf(e,undefined,args.id)} deleteFunction={() => deleteIf(args.id)} copyFunction={() => copy(args.id)} orFunction={addOr} first={args.id==='1'}/>
         </div>
         {ors.map(obj => {return (<Or key={obj.id} args={obj}/>)})}
 </>

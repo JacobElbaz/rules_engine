@@ -1,7 +1,6 @@
 import React from 'react'
 import Name from './Name'
-import If from './If'
-import Then from './Then'
+import ThenList from './ThenList'
 import { Button } from '@mui/material'
 import IfList from './IfList'
 
@@ -10,7 +9,7 @@ const RulesEngine = () => {
         <>
             <Name />
             <IfList />
-            <Then />
+            <ThenList />
             <Button variant='contained' sx={{marginTop: '15px'}}>Save Rule</Button>
         </>
     )
